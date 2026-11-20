@@ -1,0 +1,48 @@
+::group::Log message source details
+/opt/airflow/logs/dag_id=medallion/run_id=backfill__2025-01-03T00:00:00+00:00/task_id=reconcile/attempt=1.log
+::endgroup::
+[2026-11-19T10:45:38.028785Z] INFO - ::group::Pre Execute source=task  loc=task_runner.py:2412 
+Task Identity ti_id=01a1f365-116e-7fb2-9c2d-b5aeca22ea81 dag_id=medallion task_id=reconcile run_id=backfill__2025-01-03T00:00:00+00:00 try_number=1 map_index=-1
+[2026-11-19T10:45:38.042421Z] INFO - DAG bundles loaded: dags-folder source=airflow.dag_processing.bundles.manager.DagBundlesManager  loc=manager.py:304 
+[2026-11-19T10:45:38.043445Z] INFO - Filling up the DagBag from /opt/airflow/dags/medallion/dag.py source=airflow.dag_processing.dagbag.BundleDagBag  loc=dagbag.py:460 
+[2026-11-19T10:45:38.170448Z] INFO - Worker startup parse complete bundle_name=dags-folder  bundle_version=null  dag_file=medallion/dag.py  bundle_prepare_ms=1  dag_file_parse_ms=127  source=task  loc=task_runner.py:1073 
+[2026-11-19T10:45:38.198311Z] INFO - ::endgroup:: source=task  loc=task_runner.py:2232 
+[2026-11-19T10:45:38.789705Z] WARNING - urllib3 (2.7.0) or chardet (7.6.0)/charset_normalizer (3.5.1) doesn't match a supported version! category=RequestsDependencyWarning  source=py.warnings  loc=/home/airflow/.local/lib/python3.13/site-packages/snowflake/connector/vendored/requests/__init__.py:113 
+[2026-11-19T10:45:38.949070Z] INFO - Snowflake Connector for Python Version: 4.7.3, Python Version: 3.13.15, Platform: Linux-6.18.58.1-microsoft-standard-WSL2-x86_64-with-glibc2.36 source=snowflake.connector.connection  loc=connection.py:660 
+[2026-11-19T10:45:38.949763Z] INFO - Connecting to GLOBAL Snowflake domain source=snowflake.connector.connection  loc=connection.py:1773 
+[2026-11-19T10:45:44.532520Z] INFO - bronze_item_master_rows: 10 EQ 10 OK source=task.stdout 
+[2026-11-19T10:45:44.532676Z] INFO - bronze_store_master_rows: 5 EQ 5 OK source=task.stdout 
+[2026-11-19T10:45:44.532733Z] INFO - bronze_pos_sales_rows: 56 EQ 56 OK source=task.stdout 
+[2026-11-19T10:45:44.532785Z] INFO - bronze_inventory_rows: 50 EQ 50 OK source=task.stdout 
+[2026-11-19T10:45:44.532834Z] INFO - bronze_price_rows: 50 EQ 50 OK source=task.stdout 
+[2026-11-19T10:45:44.532881Z] INFO - silver_item_master_rows: 10 EQ 10 OK source=task.stdout 
+[2026-11-19T10:45:44.532927Z] INFO - silver_store_master_rows: 5 EQ 5 OK source=task.stdout 
+[2026-11-19T10:45:44.532973Z] INFO - silver_pos_sales_rows: 56 EQ 56 OK source=task.stdout 
+[2026-11-19T10:45:44.532686Z] INFO - Done. Returned value was: None source=airflow.task.operators.airflow.providers.standard.decorators.python._PythonDecoratedOperator  loc=python.py:233 
+[2026-11-19T10:45:44.532934Z] INFO - ::group::Post Execute source=task  loc=task_runner.py:1580 
+[2026-11-19T10:45:44.533018Z] INFO - silver_inventory_rows: 50 EQ 50 OK source=task.stdout 
+[2026-11-19T10:45:44.533074Z] INFO - silver_price_rows: 50 EQ 50 OK source=task.stdout 
+[2026-11-19T10:45:44.533121Z] INFO - bronze_pos_amount: 12665.23 EQ 12665.2300 OK source=task.stdout 
+[2026-11-19T10:45:44.533172Z] INFO - silver_pos_amount: 12665.2300 EQ 12665.2300 OK source=task.stdout 
+[2026-11-19T10:45:44.533227Z] INFO - gold_sales_rows: 51 EQ 51 OK source=task.stdout 
+[2026-11-19T10:45:44.533270Z] INFO - gold_sales_amount: 12394.2900 EQ 12394.2900 OK source=task.stdout 
+[2026-11-19T10:45:44.533312Z] INFO - gold_sales_vs_source: 12394.2900 EQ 12394.2900 OK source=task.stdout 
+[2026-11-19T10:45:44.533353Z] INFO - gold_price_rows: 50 EQ 50 OK source=task.stdout 
+[2026-11-19T10:45:44.533395Z] INFO - gold_inventory_rows: 50 EQ 50 OK source=task.stdout 
+[2026-11-19T10:45:44.533543Z] INFO - unknown_fact_keys: 0 LE 0 OK source=task.stdout 
+[2026-11-19T10:45:44.533599Z] INFO - latest_sales_date: 2025-01-03 EQ 2025-01-03 OK source=task.stdout 
+[2026-11-19T10:45:44.533650Z] INFO - latest_price_date: 2025-01-03 EQ 2025-01-03 OK source=task.stdout 
+[2026-11-19T10:45:44.533698Z] INFO - latest_inventory_date: 2025-01-03 EQ 2025-01-03 OK source=task.stdout 
+[2026-11-19T10:45:44.533741Z] INFO - fact_grain_dups_sales: 0 EQ 0 OK source=task.stdout 
+[2026-11-19T10:45:44.533783Z] INFO - fact_grain_dups_price: 0 EQ 0 OK source=task.stdout 
+[2026-11-19T10:45:44.533825Z] INFO - fact_grain_dups_inventory: 0 EQ 0 OK source=task.stdout 
+[2026-11-19T10:45:44.533874Z] INFO - dim_window_overlap: 0 EQ 0 OK source=task.stdout 
+[2026-11-19T10:45:44.533952Z] INFO - dim_window_bounds: 0 EQ 0 OK source=task.stdout 
+[2026-11-19T10:45:44.534003Z] INFO - dim_current_versions: 0 EQ 0 OK source=task.stdout 
+[2026-11-19T10:45:44.534049Z] INFO - dim_window_gaps: 0 EQ 0 OK source=task.stdout 
+[2026-11-19T10:45:44.534094Z] INFO - reject_rate_item_master: 0.0000 LE 5 OK source=task.stdout 
+[2026-11-19T10:45:44.534138Z] INFO - reject_rate_store_master: 0.0000 LE 5 OK source=task.stdout 
+[2026-11-19T10:45:44.534182Z] INFO - reject_rate_pos_sales: 8.9286 LE 5 ALERT source=task.stdout 
+[2026-11-19T10:45:44.534224Z] INFO - reject_rate_inventory: 0.0000 LE 5 OK source=task.stdout 
+[2026-11-19T10:45:44.534268Z] INFO - reject_rate_price: 0.0000 LE 5 OK source=task.stdout 
+[2026-11-19T10:45:44.560858Z] INFO - ::endgroup:: source=task  loc=task_runner.py:2379 

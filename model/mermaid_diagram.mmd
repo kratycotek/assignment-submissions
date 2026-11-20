@@ -1,0 +1,242 @@
+erDiagram
+    DIM_FISCAL_YEAR {
+        int YEAR_KY PK
+        int YEAR_ID
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+    }
+    DIM_FISCAL_MONTH {
+        int MONTH_KY PK
+        int MONTH_ID
+        int MONTH_NBR
+        int QUARTER_NBR
+        int YEAR_KY FK
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+    }
+    DIM_FISCAL_WEEK {
+        int WEEK_KY PK
+        int WEEK_ID
+        date WEEK_START_DT
+        date WEEK_END_DT
+        int MONTH_KY FK
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+    }
+    DIM_DAY {
+        int DAY_KY PK
+        int DAY_ID
+        date CALENDAR_DT
+        string DAY_OF_WEEK_NAME
+        boolean HOLIDAY_FLG
+        int WEEK_KY FK
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+    }
+    DIM_COMPANY {
+        int COMPANY_KY PK
+        int COMPANY_ID
+        string COMPANY_NAME
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+    }
+    DIM_DIVISION {
+        int DIVISION_KY PK
+        int DIVISION_ID
+        string DIVISION_NAME
+        int COMPANY_KY FK
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+    }
+    DIM_DEPARTMENT {
+        int DEPARTMENT_KY PK
+        int DEPARTMENT_ID
+        string DEPARTMENT_NAME
+        int DIVISION_KY FK
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+    }
+    DIM_CLASS {
+        int CLASS_KY PK
+        int CLASS_ID
+        string CLASS_NAME
+        int DEPARTMENT_KY FK
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+    }
+    DIM_ITEM {
+        int ITEM_KY PK
+        int ITEM_ID
+        string ITEM_NAME "SCD2"
+        string BRAND_NAME "SCD1"
+        int CLASS_KY FK "SCD2"
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+        boolean CURR_FLG
+        date EFF_FROM_DT
+        date EFF_TO_DT
+    }
+    DIM_ORG_COMPANY {
+        int ORG_COMPANY_KY PK
+        int ORG_COMPANY_ID
+        string ORG_COMPANY_NAME
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+    }
+    DIM_CHAIN {
+        int CHAIN_KY PK
+        int CHAIN_ID
+        string CHAIN_NAME
+        int ORG_COMPANY_KY FK
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+    }
+    DIM_REGION {
+        int REGION_KY PK
+        int REGION_ID
+        string REGION_NAME
+        int CHAIN_KY FK
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+    }
+    DIM_DISTRICT {
+        int DISTRICT_KY PK
+        int DISTRICT_ID
+        string DISTRICT_NAME
+        int REGION_KY FK
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+    }
+    DIM_LOCN {
+        int LOCN_KY PK
+        int LOCN_ID
+        string LOCN_NAME "SCD1"
+        string ADDRESS_TXT "SCD2"
+        int DISTRICT_KY FK "SCD2"
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+        boolean CURR_FLG
+        date EFF_FROM_DT
+        date EFF_TO_DT
+    }
+    DIM_CUSTOMER {
+        int CUSTOMER_KY PK
+        int CUSTOMER_ID
+        string CUSTOMER_NAME
+        string EMAIL_TXT
+        string SEGMENT_NAME
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+    }
+    FCT_SALES {
+        int ITEM_KY FK
+        int LOCN_KY FK
+        int DAY_KY FK
+        int CUSTOMER_KY FK
+        int TRANSACTION_ID
+        int TRANSACTION_LINE_NBR
+        decimal NET_SALES_AMT
+        int QUANTITY_QTY
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+    }
+    FCT_PRICE {
+        int ITEM_KY FK
+        int LOCN_KY FK
+        int DAY_KY FK
+        decimal HOLDING_PRICE_AMT
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+        date EFF_FROM_DT
+        date EFF_TO_DT
+    }
+    FCT_INVENTORY {
+        int ITEM_KY FK
+        int LOCN_KY FK
+        int DAY_KY FK
+        int ON_HAND_QTY
+        decimal INVENTORY_VALUE_AMT
+        int RECEIVED_QTY
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+        date EFF_FROM_DT
+        date EFF_TO_DT
+    }
+    AGG_SALES_WEEKLY {
+        int ITEM_KY FK
+        int LOCN_KY FK
+        int WEEK_KY FK
+        decimal NET_SALES_AMT
+        int QUANTITY_QTY
+        int SRC_ROW_CNT
+        timestamp REC_INS_TS
+        timestamp REC_UPDT_TS
+        string SRC_SYS_CD
+        string BATCH_ID
+        date EFF_FROM_DT
+        date EFF_TO_DT
+    }
+
+    DIM_FISCAL_MONTH }o--|| DIM_FISCAL_YEAR  : YEAR_KY
+    DIM_FISCAL_WEEK  }o--|| DIM_FISCAL_MONTH : MONTH_KY
+    DIM_DAY          }o--|| DIM_FISCAL_WEEK  : WEEK_KY
+
+    DIM_DIVISION   }o--|| DIM_COMPANY    : COMPANY_KY
+    DIM_DEPARTMENT }o--|| DIM_DIVISION   : DIVISION_KY
+    DIM_CLASS      }o--|| DIM_DEPARTMENT : DEPARTMENT_KY
+    DIM_ITEM       }o--|| DIM_CLASS      : CLASS_KY
+
+    DIM_CHAIN    }o--|| DIM_ORG_COMPANY : ORG_COMPANY_KY
+    DIM_REGION   }o--|| DIM_CHAIN       : CHAIN_KY
+    DIM_DISTRICT }o--|| DIM_REGION      : REGION_KY
+    DIM_LOCN     }o--|| DIM_DISTRICT    : DISTRICT_KY
+
+    FCT_SALES     }o--|| DIM_ITEM     : ITEM_KY
+    FCT_SALES     }o--|| DIM_LOCN     : LOCN_KY
+    FCT_SALES     }o--|| DIM_DAY      : DAY_KY
+    FCT_SALES     }o--|| DIM_CUSTOMER : CUSTOMER_KY
+    FCT_PRICE     }o--|| DIM_ITEM     : ITEM_KY
+    FCT_PRICE     }o--|| DIM_LOCN     : LOCN_KY
+    FCT_PRICE     }o--|| DIM_DAY      : DAY_KY
+    FCT_INVENTORY }o--|| DIM_ITEM     : ITEM_KY
+    FCT_INVENTORY }o--|| DIM_LOCN     : LOCN_KY
+    FCT_INVENTORY }o--|| DIM_DAY      : DAY_KY
+    AGG_SALES_WEEKLY }o--|| DIM_ITEM        : ITEM_KY
+    AGG_SALES_WEEKLY }o--|| DIM_LOCN        : LOCN_KY
+    AGG_SALES_WEEKLY }o--|| DIM_FISCAL_WEEK : WEEK_KY

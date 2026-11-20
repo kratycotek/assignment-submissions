@@ -1,0 +1,312 @@
+{
+    "bootstrap": [
+        "ddl/control.sql",
+        "ddl/staging.sql",
+        "ddl/silver.sql",
+        "ddl/dimensions.sql",
+        "ddl/facts.sql",
+        "load/seed_calendar.sql",
+        "load/seed_unknown_members.sql",
+        "load/seed_batch_scripts.sql"
+    ],
+    "feeds": [
+        {
+            "name": "item_master",
+            "file": "item_master_{ds}.csv",
+            "stg_table": "STG_ITEM_MASTER",
+            "tmp_table": "TMP_ITEM_MASTER",
+            "columns": [
+                "item_id",
+                "item_name",
+                "brand_name",
+                "class_id",
+                "class_name"
+            ],
+            "types": {
+                "item_id": "int",
+                "class_id": "int"
+            },
+            "keys": [
+                "item_id"
+            ],
+            "dedupe": [
+                "item_id"
+            ],
+            "dedupe_reason": "DUP_KEY",
+            "min_rows": 1,
+            "domain": [],
+            "referential": [],
+            "lookup_keys": false
+        },
+        {
+            "name": "store_master",
+            "file": "store_master_{ds}.csv",
+            "stg_table": "STG_STORE_MASTER",
+            "tmp_table": "TMP_STORE_MASTER",
+            "columns": [
+                "store_id",
+                "store_name",
+                "address_txt",
+                "district_id",
+                "district_name"
+            ],
+            "types": {
+                "store_id": "int",
+                "district_id": "int"
+            },
+            "keys": [
+                "store_id"
+            ],
+            "dedupe": [
+                "store_id"
+            ],
+            "dedupe_reason": "DUP_KEY",
+            "min_rows": 1,
+            "domain": [],
+            "referential": [],
+            "lookup_keys": false
+        },
+        {
+            "name": "pos_sales",
+            "file": "pos_sales_{ds}.csv",
+            "stg_table": "STG_POS_SALES",
+            "tmp_table": "TMP_POS_SALES",
+            "columns": [
+                "transaction_id",
+                "line_number",
+                "item_id",
+                "store_id",
+                "sale_qty",
+                "sale_amount"
+            ],
+            "types": {
+                "transaction_id": "int",
+                "line_number": "int",
+                "item_id": "int",
+                "store_id": "int",
+                "sale_qty": "int",
+                "sale_amount": "decimal"
+            },
+            "keys": [
+                "transaction_id",
+                "line_number",
+                "item_id",
+                "store_id"
+            ],
+            "dedupe": [
+                "transaction_id",
+                "line_number"
+            ],
+            "dedupe_reason": "DUP_LINE",
+            "min_rows": 1,
+            "domain": [
+                {
+                    "column": "sale_qty",
+                    "minimum": 0,
+                    "reason_cd": "NEG_QTY",
+                    "inclusive": false
+                }
+            ],
+            "referential": [
+                {
+                    "column": "item_id",
+                    "parent_table": "TMP_ITEM_MASTER",
+                    "parent_column": "item_id",
+                    "gate_code": "Q8",
+                    "reason_cd": "UNKNOWN_ITEM"
+                },
+                {
+                    "column": "store_id",
+                    "parent_table": "TMP_STORE_MASTER",
+                    "parent_column": "store_id",
+                    "gate_code": "Q9",
+                    "reason_cd": "UNKNOWN_STORE"
+                }
+            ],
+            "lookup_keys": true
+        },
+        {
+            "name": "inventory",
+            "file": "inventory_snapshot_{ds}.csv",
+            "stg_table": "STG_INVENTORY",
+            "tmp_table": "TMP_INVENTORY",
+            "columns": [
+                "item_id",
+                "store_id",
+                "on_hand_qty",
+                "inventory_value_amt",
+                "received_qty"
+            ],
+            "types": {
+                "item_id": "int",
+                "store_id": "int",
+                "on_hand_qty": "int",
+                "inventory_value_amt": "decimal",
+                "received_qty": "int"
+            },
+            "keys": [
+                "item_id",
+                "store_id"
+            ],
+            "dedupe": [
+                "item_id",
+                "store_id"
+            ],
+            "dedupe_reason": "DUP_KEY",
+            "min_rows": 0,
+            "domain": [],
+            "referential": [
+                {
+                    "column": "item_id",
+                    "parent_table": "TMP_ITEM_MASTER",
+                    "parent_column": "item_id",
+                    "gate_code": "Q8",
+                    "reason_cd": "UNKNOWN_ITEM"
+                },
+                {
+                    "column": "store_id",
+                    "parent_table": "TMP_STORE_MASTER",
+                    "parent_column": "store_id",
+                    "gate_code": "Q9",
+                    "reason_cd": "UNKNOWN_STORE"
+                }
+            ],
+            "lookup_keys": true
+        },
+        {
+            "name": "price",
+            "file": "price_master_{ds}.csv",
+            "stg_table": "STG_PRICE",
+            "tmp_table": "TMP_PRICE",
+            "columns": [
+                "item_id",
+                "store_id",
+                "holding_price_amt"
+            ],
+            "types": {
+                "item_id": "int",
+                "store_id": "int",
+                "holding_price_amt": "decimal"
+            },
+            "keys": [
+                "item_id",
+                "store_id"
+            ],
+            "dedupe": [
+                "item_id",
+                "store_id"
+            ],
+            "dedupe_reason": "DUP_KEY",
+            "min_rows": 1,
+            "domain": [
+                {
+                    "column": "holding_price_amt",
+                    "minimum": 0,
+                    "reason_cd": "NON_POSITIVE_PRICE",
+                    "inclusive": false
+                }
+            ],
+            "referential": [
+                {
+                    "column": "item_id",
+                    "parent_table": "TMP_ITEM_MASTER",
+                    "parent_column": "item_id",
+                    "gate_code": "Q8",
+                    "reason_cd": "UNKNOWN_ITEM"
+                },
+                {
+                    "column": "store_id",
+                    "parent_table": "TMP_STORE_MASTER",
+                    "parent_column": "store_id",
+                    "gate_code": "Q9",
+                    "reason_cd": "UNKNOWN_STORE"
+                }
+            ],
+            "lookup_keys": true
+        }
+    ],
+    "gold_dimensions": [
+        "load/dim_class.sql",
+        "load/dim_district.sql",
+        "load/dim_item.sql",
+        "load/dim_locn.sql"
+    ],
+    "gold_facts": [
+        "load/fct_sales.sql",
+        "load/fct_price.sql",
+        "load/fct_inventory.sql"
+    ],
+    "reconcile": "load/reconcile.sql",
+    "silver_masters": [
+        "item_master",
+        "store_master"
+    ],
+    "silver_facts": [
+        "pos_sales",
+        "inventory",
+        "price"
+    ],
+    "thresholds": {
+        "unknown_fact_keys": 0,
+        "reject_rate_pct": 5
+    },
+    "targets": {
+        "load/dim_class.sql": "DIM_CLASS",
+        "load/dim_district.sql": "DIM_DISTRICT",
+        "load/dim_item.sql": "DIM_ITEM",
+        "load/dim_locn.sql": "DIM_LOCN",
+        "load/fct_sales.sql": "FCT_SALES",
+        "load/fct_price.sql": "FCT_PRICE",
+        "load/fct_inventory.sql": "FCT_INVENTORY"
+    },
+    "sources": {
+        "load/dim_class.sql": "TMP_ITEM_MASTER",
+        "load/dim_district.sql": "TMP_STORE_MASTER",
+        "load/dim_item.sql": "TMP_ITEM_MASTER",
+        "load/dim_locn.sql": "TMP_STORE_MASTER",
+        "load/fct_sales.sql": "TMP_POS_SALES",
+        "load/fct_price.sql": "TMP_PRICE",
+        "load/fct_inventory.sql": "TMP_INVENTORY"
+    },
+    "gate_actions": {
+        "Q4": "QUARANTINE",
+        "Q5": "QUARANTINE",
+        "Q6": "QUARANTINE"
+    },
+    "table_names": {
+        "control": {
+            "batch_log": "C_BATCH_LOG",
+            "param": "C_PARAM",
+            "rej_table": "C_REJ_TABLE",
+            "alert_table": "C_ALERT_TABLE",
+            "load_dates": "C_LOAD_DATES"
+        },
+        "stg": {
+            "item_master": "STG_ITEM_MASTER",
+            "store_master": "STG_STORE_MASTER",
+            "pos_sales": "STG_POS_SALES",
+            "inventory": "STG_INVENTORY",
+            "price": "STG_PRICE"
+        },
+        "tmp": {
+            "item_master": "TMP_ITEM_MASTER",
+            "store_master": "TMP_STORE_MASTER",
+            "pos_sales": "TMP_POS_SALES",
+            "inventory": "TMP_INVENTORY",
+            "price": "TMP_PRICE"
+        },
+        "dim": {
+            "day": "DIM_DAY",
+            "item": "DIM_ITEM",
+            "locn": "DIM_LOCN",
+            "class": "DIM_CLASS",
+            "district": "DIM_DISTRICT",
+            "customer": "DIM_CUSTOMER"
+        },
+        "fct": {
+            "sales": "FCT_SALES",
+            "price": "FCT_PRICE",
+            "inventory": "FCT_INVENTORY"
+        }
+    }
+}

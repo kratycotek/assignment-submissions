@@ -1,0 +1,58 @@
+[project]
+name = "retail-dw-helpers"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "apache-airflow>=3.4.0",
+    "apache-airflow-providers-snowflake>=6.21.0",
+    "pyyaml>=6.0.2",
+    "jinja2>=3.1.6",
+    "pandas>=3.1.1",
+    "pytest>=9.2.0",
+    "snowflake>=1.15.0",
+]
+
+[project.scripts]
+retail-dw-helpers = "helpers:main"
+generate-data = "helpers.generators.generate_data:main"
+
+[build-system]
+requires = ["uv_build>=0.13.7,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "duckdb>=1.4.0",
+    "pytest>=8.0.0",
+    "sqlglot>=27.0.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "dags"]
+
+[tool.ruff]
+src = ["helpers", "dags", "tests"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["medallion", "helpers"]
+
+[tool.pyright]
+include = ["helpers", "dags", "tests"]
+extraPaths = [".", "dags", "tests"]
+pythonVersion = "3.13"
+venvPath = "."
+venv = ".venv"
+
+[tool.basedpyright]
+include = ["helpers", "dags", "tests"]
+extraPaths = [".", "dags", "tests"]
+pythonVersion = "3.13"
+venvPath = "."
+venv = ".venv"
+
+[tool.uv.build-backend]
+module-name = "helpers"
+module-root = "."

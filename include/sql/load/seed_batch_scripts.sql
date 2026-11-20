@@ -1,0 +1,31 @@
+MERGE INTO C_BATCH_SCRIPTS AS t
+USING (
+    SELECT 10 AS SCRIPT_SEQ, 'ingest_item_master' AS SCRIPT_NM, 'BRONZE' AS LAYER_CD, 'STG_ITEM_MASTER' AS TARGET_TBL_NM
+    UNION ALL SELECT 11, 'ingest_store_master', 'BRONZE', 'STG_STORE_MASTER'
+    UNION ALL SELECT 12, 'ingest_pos_sales', 'BRONZE', 'STG_POS_SALES'
+    UNION ALL SELECT 13, 'ingest_inventory', 'BRONZE', 'STG_INVENTORY'
+    UNION ALL SELECT 14, 'ingest_price', 'BRONZE', 'STG_PRICE'
+    UNION ALL SELECT 20, 'silver_item_master', 'SILVER', 'TMP_ITEM_MASTER'
+    UNION ALL SELECT 21, 'silver_store_master', 'SILVER', 'TMP_STORE_MASTER'
+    UNION ALL SELECT 30, 'dim_class.sql', 'GOLD', 'DIM_CLASS'
+    UNION ALL SELECT 31, 'dim_district.sql', 'GOLD', 'DIM_DISTRICT'
+    UNION ALL SELECT 32, 'dim_item.sql', 'GOLD', 'DIM_ITEM'
+    UNION ALL SELECT 33, 'dim_locn.sql', 'GOLD', 'DIM_LOCN'
+    UNION ALL SELECT 40, 'silver_pos_sales', 'SILVER', 'TMP_POS_SALES'
+    UNION ALL SELECT 41, 'silver_inventory', 'SILVER', 'TMP_INVENTORY'
+    UNION ALL SELECT 42, 'silver_price', 'SILVER', 'TMP_PRICE'
+    UNION ALL SELECT 50, 'fct_sales.sql', 'GOLD', 'FCT_SALES'
+    UNION ALL SELECT 51, 'fct_price.sql', 'GOLD', 'FCT_PRICE'
+    UNION ALL SELECT 52, 'fct_inventory.sql', 'GOLD', 'FCT_INVENTORY'
+    UNION ALL SELECT 60, 'reconcile.sql', 'GOLD', 'C_REJ_TABLE'
+) AS s
+    ON t.SCRIPT_SEQ = s.SCRIPT_SEQ
+WHEN MATCHED THEN
+    UPDATE SET
+        SCRIPT_NM     = s.SCRIPT_NM,
+        LAYER_CD      = s.LAYER_CD,
+        TARGET_TBL_NM = s.TARGET_TBL_NM,
+        REC_UPDT_TS   = CURRENT_TIMESTAMP()
+WHEN NOT MATCHED THEN
+    INSERT (SCRIPT_SEQ, SCRIPT_NM, LAYER_CD, TARGET_TBL_NM)
+    VALUES (s.SCRIPT_SEQ, s.SCRIPT_NM, s.LAYER_CD, s.TARGET_TBL_NM);

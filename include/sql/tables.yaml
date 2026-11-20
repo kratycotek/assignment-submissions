@@ -1,0 +1,43 @@
+# Every table name the DAG touches. Rename a target here and nothing in
+# dags/medallion/*.py needs to change.
+#
+# Top-level keys are role groups. The DAG exposes them as flat attributes:
+#   control.batch_log  ->  TABLES.control_batch_log
+#   stg.pos_sales      ->  TABLES.stg_pos_sales
+#   dim.item           ->  TABLES.dim_item
+#   fct.sales          ->  TABLES.fct_sales
+
+control:
+  batch_scripts: C_BATCH_SCRIPTS
+  batch_log: C_BATCH_LOG
+  param: C_PARAM
+  rej_table: C_REJ_TABLE
+  alert_table: C_ALERT_TABLE
+  load_dates: C_LOAD_DATES
+
+stg:
+  item_master: STG_ITEM_MASTER
+  store_master: STG_STORE_MASTER
+  pos_sales: STG_POS_SALES
+  inventory: STG_INVENTORY
+  price: STG_PRICE
+
+tmp:
+  item_master: TMP_ITEM_MASTER
+  store_master: TMP_STORE_MASTER
+  pos_sales: TMP_POS_SALES
+  inventory: TMP_INVENTORY
+  price: TMP_PRICE
+
+dim:
+  day: DIM_DAY
+  item: DIM_ITEM
+  locn: DIM_LOCN
+  class: DIM_CLASS
+  district: DIM_DISTRICT
+  customer: DIM_CUSTOMER
+
+fct:
+  sales: FCT_SALES
+  price: FCT_PRICE
+  inventory: FCT_INVENTORY

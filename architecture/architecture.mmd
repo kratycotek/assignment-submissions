@@ -1,0 +1,80 @@
+flowchart LR
+    subgraph SRC["Sources · one file per day"]
+        direction TB
+        F1["item_master"]
+        F2["store_master"]
+        F3["pos_sales"]
+        F4["inventory_snapshot (delta)"]
+        F5["price_master"]
+    end
+
+    Q0{{"Q0 sensor<br/>5 files · 600 s"}}
+
+    B["BRONZE gates<br/>file: Q1 header (fatal)<br/>per row: Q2 width<br/>fatal: Q3 survivors after Q2"]
+    STG[("STG_ITEM_MASTER · STG_STORE_MASTER<br/>STG_POS_SALES · STG_INVENTORY · STG_PRICE")]
+
+    M["SILVER master gates<br/>per row: Q4 cast → Q5 keys<br/>batch: Q7 dedupe<br/>first failure wins"]
+    TMPM[("TMP_ITEM_MASTER<br/>TMP_STORE_MASTER")]
+
+    DIM[("DIM_CLASS · DIM_DISTRICT<br/>DIM_ITEM · DIM_LOCN<br/>SCD1 · SCD2 close/open<br/>ORDER_GUARD")]
+
+    S["SILVER fact gates<br/>per row: Q4 cast → Q5 keys → Q6 domain<br/>batch: Q7 dedupe → Q8 item → Q9 store → Q10 SCD keys<br/>first failure wins"]
+    TMPF[("TMP_POS_SALES · TMP_PRICE · TMP_INVENTORY<br/>+ ITEM_KY / LOCN_KY / DAY_KY")]
+
+    FCT[("FCT_SALES replaces its day<br/>FCT_PRICE · FCT_INVENTORY<br/>windows recomputed")]
+
+    Q11{{"Q11 reconcile<br/>33 checks<br/>EQ fails · LE alerts"}}
+
+    RB[("C_REJ_TABLE<br/>BRONZE rows")]
+    RM[("C_REJ_TABLE<br/>SILVER master rows")]
+    RS[("C_REJ_TABLE<br/>SILVER + GOLD rows")]
+    RQ[("C_REJ_TABLE<br/>EQ rows")]
+    AM[("C_ALERT_TABLE<br/>master alerts")]
+    AS[("C_ALERT_TABLE<br/>fact alerts")]
+    AQ[("C_ALERT_TABLE<br/>LE rows")]
+    CTRL[("C_BATCH_LOG · C_PARAM<br/>C_LOAD_DATES · C_BATCH_SCRIPTS")]
+
+    SRC --> Q0 --> B --> STG --> M --> TMPM --> DIM --> S --> TMPF --> FCT --> Q11
+
+    B -. "fatal / reject" .-> RB
+    M -. "QUARANTINE" .-> RM
+    S -. "QUARANTINE / NO_KEY_DAY" .-> RS
+    Q11 -. "EQ" .-> RQ
+
+    M == "Q5 ALERT" ==> AM
+    S == "Q5/Q6 ALERT" ==> AS
+    Q11 == "LE" ==> AQ
+
+    Q11 -. "log + watermarks · every stage" .-> CTRL
+
+    subgraph LEGEND["Legend"]
+        direction LR
+        L1["solid: pass"]
+        L2["dotted: reject / fatal"]
+        L3["thick: alert"]
+        L4["gate list: ordered checks"]
+        L5["bronze"]
+        L6["silver"]
+        L7["gold"]
+        L8["audit table"]
+        L9["source"]
+    end
+
+    classDef bronze fill:#f6e7c8,stroke:#8a6d3b
+    classDef silver fill:#e6e6e6,stroke:#666
+    classDef gold fill:#dce9f7,stroke:#3b6a9a
+    classDef audit fill:#f7dcdc,stroke:#9a3b3b
+    classDef legend fill:#ffffff,stroke:#999
+    classDef source fill:#eef3ff,stroke:#4a5a7a
+
+    class B,STG bronze
+    class M,TMPM,S,TMPF silver
+    class DIM,FCT,Q11 gold
+    class RB,RM,RS,RQ,AM,AS,AQ,CTRL audit
+    class L1,L2,L3,L4,L5,L6,L7,L8,L9 legend
+    class F1,F2,F3,F4,F5,Q0 source
+    class L5 bronze
+    class L6 silver
+    class L7 gold
+    class L8 audit
+    class L9 source

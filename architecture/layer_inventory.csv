@@ -1,0 +1,41 @@
+Object,Layer,Format,Partitioning,Load pattern
+item_master_YYYYMMDD.csv,Source -> Bronze landing,CSV,none,Full snapshot
+store_master_YYYYMMDD.csv,Source -> Bronze landing,CSV,none,Full snapshot
+pos_sales_YYYYMMDD.csv,Source -> Bronze landing,CSV,none,Daily transactions
+inventory_snapshot_YYYYMMDD.csv,Source -> Bronze landing,CSV,none,Delta
+price_master_YYYYMMDD.csv,Source -> Bronze landing,CSV,none,Full snapshot
+STG_ITEM_MASTER,Bronze,table (all STRING),batch_id,"Full per batch, delete+insert"
+STG_STORE_MASTER,Bronze,table (all STRING),batch_id,"Full per batch, delete+insert"
+STG_POS_SALES,Bronze,table (all STRING),batch_id,"Full per batch, delete+insert"
+STG_INVENTORY,Bronze,table (all STRING),batch_id,"Delta per batch, delete+insert"
+STG_PRICE,Bronze,table (all STRING),batch_id,"Full per batch, delete+insert"
+C_REJ_TABLE,Bronze (shared audit),table,"failed_layer_cd, batch_id",Replace per batch and layer
+C_ALERT_TABLE,Bronze (shared audit),table,"failed_layer_cd, batch_id",Replace per batch and layer
+TMP_ITEM_MASTER,Silver,table,batch_id,"Full per batch, delete+insert (Python gates)"
+TMP_STORE_MASTER,Silver,table,batch_id,"Full per batch, delete+insert (Python gates)"
+TMP_POS_SALES,Silver,table,batch_id,"Full per batch, delete+insert (Python gates)"
+TMP_INVENTORY,Silver,table,batch_id,"Full per batch, delete+insert (Python gates)"
+TMP_PRICE,Silver,table,batch_id,"Full per batch, delete+insert (Python gates)"
+DIM_FISCAL_YEAR,Gold,table,none,"Seed, idempotent"
+DIM_FISCAL_MONTH,Gold,table,none,"Seed, idempotent"
+DIM_FISCAL_WEEK,Gold,table,none,"Seed, idempotent"
+DIM_DAY,Gold,table,none,"Seed, idempotent"
+DIM_COMPANY,Gold,table,none,Seed UNKNOWN member
+DIM_DIVISION,Gold,table,none,Seed UNKNOWN member
+DIM_DEPARTMENT,Gold,table,none,Seed UNKNOWN member
+DIM_ORG_COMPANY,Gold,table,none,Seed UNKNOWN member
+DIM_CHAIN,Gold,table,none,Seed UNKNOWN member
+DIM_REGION,Gold,table,none,Seed UNKNOWN member
+DIM_CLASS,Gold,table,none,SCD1 merge per batch
+DIM_DISTRICT,Gold,table,none,SCD1 merge per batch
+DIM_ITEM,Gold,table,none,SCD2 close/open + SCD1 brand per batch
+DIM_LOCN,Gold,table,none,SCD2 close/open + SCD1 name per batch
+DIM_CUSTOMER,Gold,table,none,Seed UNKNOWN member
+FCT_SALES,Gold,table,day_ky,Replace per batch day
+FCT_PRICE,Gold,table,day_ky,Positional upsert + window recompute
+FCT_INVENTORY,Gold,table,day_ky,Positional upsert + window recompute
+C_BATCH_LOG,Gold (control),table,batch_id,Append per script per run
+C_PARAM,Gold (control),table,batch_id,Replace per batch; reload window under __CONTROL__
+C_LOAD_DATES,Gold (control),table,target_tbl_nm,MERGE high-water mark
+C_BATCH_SCRIPTS,Gold (control),table,none,Seeded at bootstrap
+AGG_SALES_WEEKLY,"Gold (declared, not loaded)",table,week_ky,Not implemented in 2.3
